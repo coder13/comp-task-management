@@ -5,8 +5,6 @@ interface wcaMeResponse {
   me: WCAUser;
 }
 
-console.log(7);
-
 const authOptions: AuthOptions = {
   // Configure one or more authentication providers
   providers: [
@@ -31,9 +29,17 @@ const authOptions: AuthOptions = {
       token: {
         url: `https://staging.worldcubeassociation.org/oauth/token`,
         async request(context) {
-          console.log(29, context);
           const provider = context.provider;
-          const query = `https://staging.worldcubeassociation.org/oauth/token?client_id=${provider.clientId}&client_secret=${provider.clientSecret}&redirect_uri=${provider.callbackUrl}&code=${context.params.code}&grant_type=authorization_code`;
+
+          const params = new URLSearchParams({
+            client_id: provider.clientId!,
+            client_secret: provider.clientSecret!,
+            redirect_uri: provider.callbackUrl!,
+            code: context.params.code!,
+            grant_type: 'authorization_code',
+          });
+
+          const query = `https://staging.worldcubeassociation.org/oauth/token?${params.toString()}`;
           const res = await fetch(query, { method: 'POST' });
           const json = await res.json();
           return { tokens: json };
@@ -41,7 +47,6 @@ const authOptions: AuthOptions = {
       },
       userinfo: 'https://staging.worldcubeassociation.org/api/v0/me',
       profile(profile: wcaMeResponse) {
-        console.log(38, profile);
         return {
           id: profile.me.id,
           name: profile.me.name,
@@ -50,18 +55,22 @@ const authOptions: AuthOptions = {
       },
     },
   ],
-  events: {
-    createUser: async ({ user }) => {
-      console.log(user);
-    },
-  },
   callbacks: {
     async jwt({ token, account, profile }) {
-      if (account) {
+      if (profile && account) {
         token.accessToken = account?.access_token;
         token.refreshToken = account?.refresh_token;
+        token.accessTokenExpires = account.expires_at; // 2 hours
         // @ts-ignore
         token.id = profile?.id;
+      }
+
+      if (
+        token.accessTokenExpires &&
+        (token.accessTokenExpires as number) * 1000 < Date.now()
+      ) {
+        // todo: refresh token
+        console.log('token is expired', token);
       }
       return token;
     },
