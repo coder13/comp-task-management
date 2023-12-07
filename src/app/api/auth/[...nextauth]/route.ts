@@ -1,5 +1,5 @@
 import NextAuth, { AuthOptions } from 'next-auth';
-import { WCAUser } from '../../../../../types/wca.types';
+import { WCAUser } from '../../../../../types/wca';
 
 interface wcaMeResponse {
   me: WCAUser;
@@ -46,23 +46,18 @@ const authOptions: AuthOptions = {
         },
       },
       userinfo: 'https://staging.worldcubeassociation.org/api/v0/me',
-      profile(profile: wcaMeResponse) {
-        return {
-          id: profile.me.id,
-          name: profile.me.name,
-          email: profile.me.email,
-        };
-      },
+      profile: (profile: wcaMeResponse) => profile.me,
     },
   ],
   callbacks: {
-    async jwt({ token, account, profile }) {
-      if (profile && account) {
+    async jwt({ trigger, user, session, token, account, profile }) {
+      if (profile && account && user) {
         token.accessToken = account?.access_token;
         token.refreshToken = account?.refresh_token;
         token.accessTokenExpires = account.expires_at; // 2 hours
-        // @ts-ignore
-        token.id = profile?.id;
+
+        token.id = user.id;
+        token.picture = user.avatar?.url;
       }
 
       if (
@@ -72,6 +67,7 @@ const authOptions: AuthOptions = {
         // todo: refresh token
         console.log('token is expired', token);
       }
+
       return token;
     },
   },

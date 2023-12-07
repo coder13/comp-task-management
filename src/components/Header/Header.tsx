@@ -22,9 +22,12 @@ export default function Header() {
         </button>
       )}
       {status === 'authenticated' && (
-        <button className="bg-blue-200 p-2" onClick={() => signOut()}>
-          Sign Out
-        </button>
+        <>
+          <button className="bg-blue-200 p-2" onClick={() => signOut()}>
+            Sign Out
+          </button>
+          Signed in as: {data?.user?.name}
+        </>
       )}
       {status === 'loading' && <div className="bg-blue-200 p-2">Loading</div>}
     </div>
