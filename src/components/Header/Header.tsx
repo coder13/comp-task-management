@@ -3,13 +3,13 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 
 export default function Header() {
-  const { data, status } = useSession();
+  // const { data, status } = useSession();
 
-  console.log(6, { data, status });
+  // console.log(6, { data, status });
 
   return (
     <div className="w-full flex">
-      {status === 'unauthenticated' && (
+      {/* {status === 'unauthenticated' && (
         <button
           className="bg-blue-200 p-2"
           onClick={() =>
@@ -29,7 +29,7 @@ export default function Header() {
           Signed in as: {data?.user?.name}
         </>
       )}
-      {status === 'loading' && <div className="bg-blue-200 p-2">Loading</div>}
+      {status === 'loading' && <div className="bg-blue-200 p-2">Loading</div>} */}
     </div>
   );
 }
