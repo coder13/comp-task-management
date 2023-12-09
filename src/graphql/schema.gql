@@ -24,14 +24,22 @@ scalar Date
 type User {
   id: NumericalID!
   name: String!
-  email: String!
+  email: String
 
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  createdAt: DateTime
+  updatedAt: DateTime
   lastLogin: DateTime
 
-  competitions(after: String, before: String): [UserCompetitionMap!]!
-  items: [Item!]!
+  Competitions(after: String, before: String): [UserCompetitionMap!]
+  Items: [Item!]
+  Credentials: Credentials
+}
+
+type Credentials {
+  userId: NumericalID!
+  accessToken: String!
+  refreshToken: String!
+  expiresAt: DateTime!
 }
 
 type Competition {
@@ -42,14 +50,16 @@ type Competition {
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
-  flow: Flow
-  competitionMetaData: CompetitionMetaData
+
+  Flow: Flow
+  CompetitionMetaData: CompetitionMetaData
+  Users: [UserCompetitionMap!]
 }
 
 type CompetitionMetaData {
   id: NumericalID!
   wcaId: String
-  updatedByUserId: NumericalID!
+  updatedByUserId: NumericalID
 
   announced: Boolean
   startDate: String
@@ -57,16 +67,17 @@ type CompetitionMetaData {
 
   createdAt: DateTime!
   updatedAt: DateTime!
+
+  UpdatedByUserId: User
 }
 
 type UserCompetitionMap {
-  id: NumericalID!
   competitionId: NumericalID!
   userId: NumericalID!
   role: UserCompetitionRole!
 
-  competition: Competition!
-  user: User!
+  Competition: Competition
+  User: User
 }
 
 type Team {
@@ -78,11 +89,11 @@ type Team {
   updatedAt: DateTime!
   deletedAt: DateTime
 
-  competitions: [Competition!]!
-  members: [TeamMemberMap!]!
-  templates: [Template!]!
-  orgUsers: [OrgUser!]!
-  items: [Item!]!
+  Competitions: [Competition!]!
+  Members: [TeamMemberMap!]!
+  Templates: [Template!]!
+  OrgUsers: [User!]!
+  Items: [Item!]!
 }
 
 type TeamMemberMap {
@@ -90,24 +101,8 @@ type TeamMemberMap {
   userId: NumericalID!
   role: TeamMemberRole!
 
-  team: Team!
-  user: User!
-}
-
-type OrgUser {
-  id: NumericalID!
-  name: String!
-  email: String!
-  accessToken: String!
-  refreshToken: String!
-  expiresAt: DateTime!
-  teamId: NumericalID!
-
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  deletedAt: DateTime
-
-  team: Team!
+  Team: Team!
+  User: User!
 }
 
 # Task Management:
@@ -122,9 +117,9 @@ type Flow {
   updatedAt: DateTime!
   deletedAt: DateTime
 
-  items: [Item!]!
-  template: Template!
-  competition: Competition
+  Items: [Item!]!
+  Template: Template!
+  Competition: Competition
 }
 
 # Items can belong directly to a flow, team, user, etc..
@@ -147,13 +142,13 @@ type Item {
   updatedAt: DateTime!
   deletedAt: DateTime
 
-  assignees: [User!]!
-  flow: Flow!
-  template: Template
-  datapoint: Datapoint
-  team: Team!
-  parentItem: Item
-  childItems: [Item!]!
+  Assignees: [User!]!
+  Flow: Flow!
+  Template: Template
+  Datapoint: Datapoint
+  Team: Team!
+  ParentItem: Item
+  ChildItems: [Item!]!
 }
 
 type Template {
@@ -166,9 +161,9 @@ type Template {
   updatedAt: DateTime!
   deletedAt: DateTime
 
-  items: [Item!]!
-  belongsToUser: User
-  belongsToTeam: Team
+  Items: [Item!]!
+  BelongsToUser: User
+  BelongsToTeam: Team
 }
 
 type ItemTemplate {
@@ -186,10 +181,10 @@ type ItemTemplate {
   updatedAt: DateTime!
   deletedAt: DateTime
 
-  template: Template!
-  parentItem: ItemTemplate
-  childItems: [ItemTemplate!]!
-  datapoint: Datapoint
+  Template: Template!
+  ParentItem: ItemTemplate
+  ChildItems: [ItemTemplate!]!
+  Datapoint: Datapoint
 }
 
 type Datapoint {

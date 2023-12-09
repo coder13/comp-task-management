@@ -1,87 +1,53 @@
-import { Datapoint, Resolvers } from '@/generated/graphql';
-import { User } from '@/lib/auth';
+import { Resolvers, UserCompetitionMap } from '@/generated/graphql';
+import * as Mutation from './Mutation';
+import * as Query from './Query';
+import { GraphQLContext } from './types';
 import { prisma } from '@/prisma';
-import { getCompetition } from '@/wcaApi';
-import { CompetitionStatus, UserCompetitionRole } from '@prisma/client';
-import { YogaInitialContext } from 'graphql-yoga';
-
-export interface GraphQLContext extends YogaInitialContext {
-  user: User;
-}
 
 const resolvers: Resolvers<GraphQLContext> = {
-  Query: {
-    datapoints: async () => (await prisma.dataPoint.findMany()) as Datapoint[],
-  },
-  Mutation: {
-    importCompetition: async (_, { wcaId }, { user }) => {
-      console.log(17, user);
-      const compData = await getCompetition(user.accessToken, wcaId);
-
-      console.log(21, compData);
-
-      const alreadyExists = await prisma.competitionMetaData.findUnique({
+  Query,
+  Mutation,
+  User: {
+    Competitions: (user, _, __) =>
+      prisma.userCompetitionMap.findMany({
         where: {
-          wcaId,
+          userId: user.id,
         },
-      });
-
-      if (alreadyExists) {
-        throw new Error(`Competition ${wcaId} already exists`);
-      }
-
-      const involvedPersons = [
-        ...compData.organizers.map((organizer) => ({
-          wcaUserId: organizer.id,
-          role: UserCompetitionRole.Organizer,
-          name: organizer.name,
-          email: organizer.email,
-        })),
-        ...compData.delegates.map((delegate) => ({
-          wcaUserId: delegate.id,
-          role: UserCompetitionRole.Delegate,
-          name: delegate.name,
-          email: delegate.email,
-        })),
-      ];
-
-      const competition = await prisma.competition.create({
-        data: {
-          name: compData.name,
-          status: compData.announced_at
-            ? CompetitionStatus.Announced
-            : CompetitionStatus.Planning,
-          CompetitionMetaData: {
-            create: {
-              announced: !!compData.announced_at,
-              startDate: compData.start_date,
-              endDate: compData.end_date,
-              updatedByUserId: null,
-              wcaId: wcaId,
+        include: {
+          Competition: {
+            include: {
+              CompetitionMetaData: true,
             },
           },
-          Users: {
-            create: involvedPersons.map((person) => ({
-              role: person.role,
-              User: {
-                connectOrCreate: {
-                  where: {
-                    id: person.wcaUserId,
-                  },
-                  create: {
-                    id: person.wcaUserId,
-                    name: person.name,
-                    email: person.email,
-                  },
-                },
-              },
-            })),
-          },
+          User: true,
         },
-      });
-
-      return competition;
-    },
+      }) as Promise<UserCompetitionMap[]>,
+  },
+  Competition: {
+    Users: (competition, _, __) =>
+      prisma.userCompetitionMap.findMany({
+        where: {
+          competitionId: competition.id,
+        },
+        include: {
+          User: true,
+          Competition: true,
+        },
+      }) as Promise<UserCompetitionMap[]>,
+  },
+  UserCompetitionMap: {
+    User: (userCompetitionMap, _, __) =>
+      prisma.user.findUnique({
+        where: {
+          id: userCompetitionMap.userId,
+        },
+      }),
+    Competition: (userCompetitionMap, _, __) =>
+      prisma.competition.findUnique({
+        where: {
+          id: userCompetitionMap.competitionId,
+        },
+      }),
   },
 };
 
