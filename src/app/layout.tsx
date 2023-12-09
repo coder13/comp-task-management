@@ -23,6 +23,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/icon.svg" sizes="any" />
+      </head>
       <body
         className={classNames(
           'min-h-screen bg-background font-sans antialiased',

@@ -10,36 +10,235 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// User / Competition Management:
+
+// User models can exist with them having logged in
+// Users will be created if they don't exist when a competition is imported
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  lastLogin DateTime?
+
+  Competitions UserCompetitionMap[]
+  Teams        TeamMemberMap[]
+  Items        Item[]
+
+  Templates           Template[]
+  CompetitionMetaData CompetitionMetaData[]
+}
+
+// While normally imported from the WCA website, this can exist without a link to the WCA
+// A user can create a Flow, then import a competition linking it or
+// A user can import a competition, then create a Flow linking it
+model Competition {
+  id                    Int               @id @default(autoincrement())
+  status                CompetitionStatus
+  name                  String
+  flowId                Int?              @unique
+  competitionMetaDataId Int?              @unique
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  Users UserCompetitionMap[]
+  Teams Team[]               @relation("Competition")
+
+  Flow                Flow?                @relation(fields: [flowId], references: [id])
+  CompetitionMetaData CompetitionMetaData? @relation(fields: [competitionMetaDataId], references: [id])
+}
+
+// Handles metadata for a competition. If there is a wcaId, this data persists downstream and can be updated manually
+// When a competition is linked, a user can choose to update the data from the WCA
+model CompetitionMetaData {
+  id              Int     @id @default(autoincrement())
+  wcaId           String? @unique
+  updatedByUserId Int?
+
+  announced Boolean? // null if not linked to WCA
+  startDate String?
+  endDate   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organizerIn Competition[] @relation("Organizer")
-  delegateIn  Competition[] @relation("Delegate")
+  UpdatedBy   User?        @relation(fields: [updatedByUserId], references: [id]) // null if imported from WCA
+  Competition Competition?
+}
+
+model UserCompetitionMap {
+  userId        Int
+  competitionId Int
+  role          UserCompetitionRole
+
+  User        User        @relation(fields: [userId], references: [id])
+  Competition Competition @relation(fields: [competitionId], references: [id])
+
+  @@id([userId, competitionId, role])
+  @@map("UserCompetition")
 }
 
 model Team {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  competitions Competition[] @relation("Competition")
-}
-
-model Competition {
   id        Int       @id @default(autoincrement())
-  wcaId     String    @unique
   name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  delegates  User[] @relation("Delegate")
-  organizers User[] @relation("Organizer")
-  teams      Team[] @relation("Competition")
+  Competitions Competition[]   @relation("Competition")
+  Members      TeamMemberMap[]
+  Templates    Template[]
+  OrgUsers     OrgUser[]
+  Items        Item[]
+}
+
+model TeamMemberMap {
+  teamId Int
+  userId Int
+  role   TeamMemberRole
+
+  Team Team @relation(fields: [teamId], references: [id])
+  User User @relation(fields: [userId], references: [id])
+
+  @@id([teamId, userId, role])
+  @@map("TeamMember")
+}
+
+model OrgUser {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  teamId       Int
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  Team Team @relation(fields: [teamId], references: [id])
+}
+
+// Task Management:
+
+// A flow is to an Item is to a Category as a Template is to an ItemTemplate is to a CategoryTemplate
+// Flows contain many items, items belong to one flow, items belong to one category
+// Templates contain many item templates, item templates belong to one template, item templates belong to one category template
+
+model Flow {
+  id            Int    @id @default(autoincrement())
+  competitionId Int    @unique
+  templateId    Int // The template that this flow was created from. This can be referenced when updating template data or when deadline needs to be updated
+  name          String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  Items       Item[]
+  Template    Template     @relation(fields: [templateId], references: [id])
+  Competition Competition?
+}
+
+// Items can represent a category, task, or datapoint
+// Items collect data, track data, and categorize data
+// Items can have child items, which can be used to create a hierarchy
+// Items can be created from a template, which can be used to create a hierarchy
+model Item {
+  id             Int       @id @default(autoincrement())
+  parentItemId   Int?
+  flowId         Int? // Items can belong directly to a flow or to a team, but not both
+  teamId         Int? // Items can belong directly to a team or to a flow, but not both
+  templateId     Int? // The template that this item was created from. This can be referenced when updating template data or when deadline needs to be updated
+  type           ItemType
+  name           String
+  description    String?
+  deadline       DateTime?
+  taskStatus     String? // For items that are type "task", this is the status of the task
+  dataPointId    Int? // For items that are type "datapoint", this is the key of the datapoint to store in the wcif
+  dataPointValue String? // for items that are type "datapoint", this is the value of the datapoint to store in the wcif
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  Assignees  User[]
+  Flow       Flow?      @relation(fields: [flowId], references: [id])
+  Template   Template?  @relation(fields: [templateId], references: [id])
+  Datapoint  DataPoint? @relation(fields: [dataPointId], references: [id])
+  Team       Team?      @relation(fields: [teamId], references: [id])
+  ParentItem Item?      @relation("ParentItem", fields: [parentItemId], references: [id])
+  ChildItems Item[]     @relation("ParentItem")
+}
+
+model Template {
+  id              Int    @id @default(autoincrement())
+  name            String
+  belongsToUserId Int
+  belongsToTeamId Int
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  Items         ItemTemplate[]
+  BelongsToUser User?          @relation(fields: [belongsToUserId], references: [id])
+  BelongsToTeam Team?          @relation(fields: [belongsToTeamId], references: [id])
+  Item          Item[]
+  Flow          Flow[]
+}
+
+model DataPoint {
+  id   Int    @id @default(autoincrement())
+  key  String
+  item Item[]
+}
+
+model ItemTemplate {
+  id                 Int      @id @default(autoincrement())
+  templateId         Int
+  categoryTemplateId Int?
+  type               ItemType
+  name               String
+  description        String?
+  relativeDeadline   Int? // days before competition start
+  dataPointId        Int? // For items that are type "datapoint", this is the key of the datapoint to store in the wcif
+  parentItemId       Int?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  Template   Template       @relation(fields: [templateId], references: [id])
+  ParentItem ItemTemplate?  @relation("ParentItemTemplate", fields: [parentItemId], references: [id])
+  ChildItems ItemTemplate[] @relation("ParentItemTemplate")
+}
+
+// Enums:
+
+enum UserCompetitionRole {
+  Delegate
+  Organizer
+}
+
+enum TeamMemberRole {
+  Member
+  Leader
+}
+
+enum ItemType {
+  Category
+  Task
+  Datapoint
+  Note
+}
+
+enum CompetitionStatus {
+  Potential
+  Planned
+  Announced
 }

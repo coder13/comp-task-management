@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  
+  <!-- Cube Outline -->
+  <rect x="20" y="8" width="24" height="24" rx="4" ry="4" fill="#0099FF" />
+  <rect x="8" y="20" width="24" height="24" rx="4" ry="4" fill="#FF6600" />
+  <rect x="36" y="20" width="24" height="24" rx="4" ry="4" fill="#FFCC00" />
+  <rect x="20" y="36" width="24" height="24" rx="4" ry="4" fill="#00CC33" />
+  <rect x="20" y="20" width="24" height="24" rx="4" ry="4" fill="#FF0000" />
+  <rect x="36" y="36" width="24" height="24" rx="4" ry="4" fill="#FFFFFF" />
+  
+  <path d="M10 32l6-6 12 12L50 20l6 6L28 54z" fill="#008000" />
+</svg>
+  
