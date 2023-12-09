@@ -1,9 +1,0 @@
-# This is the root most schema for task management
-type Flow {
-  id: ID!
-  competitionId: ID!
-  name: String!
-  tasks: [Task!]!
-
-  competition: competition
-}

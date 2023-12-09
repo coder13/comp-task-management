@@ -2,11 +2,210 @@ type Query {
   datapoints: [Datapoint!]!
 }
 
+scalar NumericalID
+scalar DateTime
+scalar Date
+
+type User {
+  id: NumericalID!
+  name: String!
+  email: String!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  lastLogin: DateTime
+
+  competitions(after: String, before: String): [UserCompetitionMap!]!
+  items: [Item!]!
+}
+
+type Competition {
+  id: NumericalID!
+  name: String!
+  status: CompetitionStatus!
+  flowId: NumericalID
+  competitionMetaDataId: NumericalID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  flow: Flow
+  competitionMetaData: CompetitionMetaData
+}
+
+type CompetitionMetaData {
+  id: NumericalID!
+  wcaId: String
+  updatedByUserId: NumericalID!
+
+  announced: Boolean
+  startDate: String
+  endDate: String
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type UserCompetitionMap {
+  id: NumericalID!
+  competitionId: NumericalID!
+  userId: NumericalID!
+  role: UserCompetitionRole!
+
+  competition: Competition!
+  user: User!
+}
+
+type Team {
+  id: NumericalID!
+  name: String!
+  competitionId: NumericalID!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+
+  competitions: [Competition!]!
+  members: [TeamMemberMap!]!
+  templates: [Template!]!
+  orgUsers: [OrgUser!]!
+  items: [Item!]!
+}
+
+type TeamMemberMap {
+  teamId: NumericalID!
+  userId: NumericalID!
+  role: TeamMemberRole!
+
+  team: Team!
+  user: User!
+}
+
+type OrgUser {
+  id: NumericalID!
+  name: String!
+  email: String!
+  accessToken: String!
+  refreshToken: String!
+  expiresAt: DateTime!
+  teamId: NumericalID!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+
+  team: Team!
+}
+
+# Task Management:
+
+type Flow {
+  id: NumericalID!
+  competitionId: NumericalID!
+  templateId: NumericalID!
+  name: String!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+
+  items: [Item!]!
+  template: Template!
+  competition: Competition
+}
+
+# Items can belong directly to a flow, team, user, etc..
+type Item {
+  id: NumericalID!
+  parentItemId: NumericalID
+  itemTemplateId: NumericalID
+  flowId: NumericalID
+  teamId: NumericalID
+  type: ItemType!
+  order: Int!
+  name: String!
+  description: String
+  deadline: Date
+  taskStatus: String
+  dataPointId: NumericalID
+  dataPointValue: String
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+
+  assignees: [User!]!
+  flow: Flow!
+  template: Template
+  datapoint: Datapoint
+  team: Team!
+  parentItem: Item
+  childItems: [Item!]!
+}
+
+type Template {
+  id: NumericalID!
+  name: String!
+  belongsToUserId: NumericalID
+  belongsToTeamId: NumericalID
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+
+  items: [Item!]!
+  belongsToUser: User
+  belongsToTeam: Team
+}
+
+type ItemTemplate {
+  id: NumericalID!
+  templateId: NumericalID!
+  parentItemId: NumericalID
+  type: ItemType!
+  order: Int!
+  name: String!
+  description: String
+  relativeDeadline: Date
+  dataPointId: NumericalID
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+
+  template: Template!
+  parentItem: ItemTemplate
+  childItems: [ItemTemplate!]!
+  datapoint: Datapoint
+}
+
 type Datapoint {
-  id: Int!
+  id: NumericalID!
   key: String!
   type: JSONType!
   validation: Validation
+}
+
+enum UserCompetitionRole {
+  Delegate
+  Organizer
+}
+
+enum TeamMemberRole {
+  Member
+  Leader
+}
+
+enum ItemType {
+  Category
+  Task
+  Datapoint
+  Note
+}
+
+enum CompetitionStatus {
+  Potential
+  Planned
+  Announced
 }
 
 enum JSONType {

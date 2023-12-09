@@ -151,10 +151,11 @@ model Flow {
 model Item {
   id             Int       @id @default(autoincrement())
   parentItemId   Int?
+  itemTemplateId Int?
   flowId         Int? // Items can belong directly to a flow or to a team, but not both
   teamId         Int? // Items can belong directly to a team or to a flow, but not both
-  templateId     Int? // The template that this item was created from. This can be referenced when updating template data or when deadline needs to be updated
   type           ItemType
+  order          Int
   name           String
   description    String?
   deadline       DateTime?
@@ -167,12 +168,12 @@ model Item {
   deletedAt DateTime?
 
   Assignees  User[]
-  Flow       Flow?      @relation(fields: [flowId], references: [id])
-  Template   Template?  @relation(fields: [templateId], references: [id])
-  Datapoint  DataPoint? @relation(fields: [dataPointId], references: [id])
-  Team       Team?      @relation(fields: [teamId], references: [id])
-  ParentItem Item?      @relation("ParentItem", fields: [parentItemId], references: [id])
-  ChildItems Item[]     @relation("ParentItem")
+  Flow       Flow?         @relation(fields: [flowId], references: [id])
+  Template   ItemTemplate? @relation(fields: [itemTemplateId], references: [id])
+  Datapoint  DataPoint?    @relation(fields: [dataPointId], references: [id])
+  Team       Team?         @relation(fields: [teamId], references: [id])
+  ParentItem Item?         @relation("ParentItem", fields: [parentItemId], references: [id])
+  ChildItems Item[]        @relation("ParentItem")
 }
 
 model Template {
@@ -188,20 +189,19 @@ model Template {
   Items         ItemTemplate[]
   BelongsToUser User?          @relation(fields: [belongsToUserId], references: [id])
   BelongsToTeam Team?          @relation(fields: [belongsToTeamId], references: [id])
-  Item          Item[]
   Flow          Flow[]
 }
 
 model ItemTemplate {
-  id                 Int      @id @default(autoincrement())
-  templateId         Int
-  categoryTemplateId Int?
-  type               ItemType
-  name               String
-  description        String?
-  relativeDeadline   Int? // days before competition start
-  dataPointId        Int? // For items that are type "datapoint", this is the key of the datapoint to store in the wcif
-  parentItemId       Int?
+  id               Int      @id @default(autoincrement())
+  parentItemId     Int?
+  templateId       Int
+  type             ItemType
+  order            Int
+  name             String
+  description      String?
+  relativeDeadline Int? // days before competition start
+  dataPointId      Int? // For items that are type "datapoint", this is the key of the datapoint to store in the wcif
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -210,6 +210,7 @@ model ItemTemplate {
   Template   Template       @relation(fields: [templateId], references: [id])
   ParentItem ItemTemplate?  @relation("ParentItemTemplate", fields: [parentItemId], references: [id])
   ChildItems ItemTemplate[] @relation("ParentItemTemplate")
+  Item       Item[]
 }
 
 model DataPoint {

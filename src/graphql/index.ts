@@ -4,10 +4,13 @@ import { fileURLToPath } from 'url';
 
 import { createSchema, createYoga } from 'graphql-yoga';
 import Resolvers from './resolvers';
+import { typeDefs as scalarTypeDefs } from 'graphql-scalars';
 
-const schema = fs.readFileSync(
-  path.join(path.dirname(fileURLToPath(import.meta.url)), 'schema.gql'),
-  'utf-8',
+const schema = String(
+  fs.readFileSync(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), 'schema.gql'),
+    'utf-8',
+  ),
 );
 
 export const yogaServer = createYoga({

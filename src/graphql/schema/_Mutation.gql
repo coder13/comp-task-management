@@ -1,5 +1,0 @@
-type Mutation {
-  importCompetition(id: String!): String!
-  createFlow(name: String!): Flow!
-  linkFlowToCompetition(flowId: String!, competitionId: String!): Flow!
-}
