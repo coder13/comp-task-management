@@ -7,24 +7,20 @@ import { logger } from '../../../../../logger';
 export async function GET(req: NextRequest) {
   try {
     const code = req.nextUrl.searchParams.get('code');
-    console.log(4);
 
-    const tokenRes = (await fetch(
-      'https://staging.worldcubeassociation.org/oauth/token',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          client_id: process.env.WCA_CLIENT_ID!,
-          client_secret: process.env.WCA_CLIENT_SECRET!,
-          redirect_uri: 'http://localhost:3000/api/auth/callback',
-          grant_type: 'authorization_code',
-          code,
-        }),
+    const tokenRes = (await fetch(`${process.env.WCA_ORIGIN}/oauth/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    ).then((res) => res.json())) as {
+      body: JSON.stringify({
+        client_id: process.env.WCA_CLIENT_ID!,
+        client_secret: process.env.WCA_CLIENT_SECRET!,
+        redirect_uri: 'http://localhost:3000/api/auth/callback',
+        grant_type: 'authorization_code',
+        code,
+      }),
+    }).then((res) => res.json())) as {
       access_token: string;
       token_type: string;
       expires_in: number;
@@ -33,14 +29,11 @@ export async function GET(req: NextRequest) {
       created_at: number;
     };
 
-    const userRes = (await fetch(
-      'https://staging.worldcubeassociation.org/api/v0/me',
-      {
-        headers: {
-          Authorization: `Bearer ${tokenRes.access_token}`,
-        },
+    const userRes = (await fetch(`${process.env.WCA_ORIGIN}/api/v0/me`, {
+      headers: {
+        Authorization: `Bearer ${tokenRes.access_token}`,
       },
-    ).then((res) => res.json())) as {
+    }).then((res) => res.json())) as {
       me: WCAUser;
     };
 

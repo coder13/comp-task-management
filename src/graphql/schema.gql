@@ -1,5 +1,20 @@
 type Query {
+  # Returns the currently logged in user.
+  me: User
+
+  # Returns a competition by id.
+  competition(id: NumericalID!): Competition!
+
+  # Returns all datapoints supported
   datapoints: [Datapoint!]!
+}
+
+type Mutation {
+  # Improts a competition from the WCA website.
+  importCompetition(wcaId: String!): Competition!
+
+  # Creates a flow. If a competitionId is specified, then the flow is linked to a competition. If a templateId is specified then the flow will be created from the template.
+  createFlow(competitionId: NumericalID, templateId: NumericalID): Flow!
 }
 
 scalar NumericalID
@@ -22,9 +37,8 @@ type User {
 type Competition {
   id: NumericalID!
   name: String!
-  status: CompetitionStatus!
   flowId: NumericalID
-  competitionMetaDataId: NumericalID!
+  competitionMetaDataId: NumericalID
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime

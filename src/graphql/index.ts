@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 import { createSchema, createYoga } from 'graphql-yoga';
 import Resolvers from './resolvers';
-import { typeDefs as scalarTypeDefs } from 'graphql-scalars';
+import { getUser } from '@/helpers/user';
 
 const schema = String(
   fs.readFileSync(
@@ -18,6 +18,14 @@ export const yogaServer = createYoga({
     typeDefs: schema,
     resolvers: Resolvers,
   }),
+  context: async () => {
+    // const request = req.request as NextRequest;
+    const user = await getUser();
+
+    return {
+      user,
+    };
+  },
 
   // While using Next.js file convention for routing, we need to configure Yoga to use the correct endpoint
   graphqlEndpoint: '/api/graphql',

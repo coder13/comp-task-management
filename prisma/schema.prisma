@@ -15,9 +15,10 @@ datasource db {
 // User models can exist with them having logged in
 // Users will be created if they don't exist when a competition is imported
 model User {
-  id        Int       @id
-  name      String
-  email     String
+  id    Int     @id
+  name  String
+  email String? @unique
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   lastLogin DateTime?
@@ -28,6 +29,9 @@ model User {
 
   Templates           Template[]
   CompetitionMetaData CompetitionMetaData[]
+  Team                Team?                 @relation(fields: [teamId], references: [id])
+  teamId              Int?
+  credentials         Credentials?
 }
 
 // While normally imported from the WCA website, this can exist without a link to the WCA
@@ -91,7 +95,7 @@ model Team {
   Competitions Competition[]   @relation("Competition")
   Members      TeamMemberMap[]
   Templates    Template[]
-  OrgUsers     OrgUser[]
+  OrgUsers     User[]
   Items        Item[]
 }
 
@@ -107,20 +111,12 @@ model TeamMemberMap {
   @@map("TeamMember")
 }
 
-model OrgUser {
-  id           Int      @id @default(autoincrement())
-  name         String
-  email        String
+model Credentials {
+  userId       Int      @id
   accessToken  String
   refreshToken String
   expiresAt    DateTime
-  teamId       Int
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  Team Team @relation(fields: [teamId], references: [id])
+  user         User?    @relation(fields: [userId], references: [id])
 }
 
 // Task Management:
@@ -242,7 +238,7 @@ enum ItemType {
 
 enum CompetitionStatus {
   Potential
-  Planned
+  Planning
   Announced
 }
 
