@@ -5,6 +5,8 @@ import Providers from '@/providers';
 import Header from '@/components/Header/Header';
 import classNames from 'classnames';
 import { Sidebar } from '@/components/Sidebar/Sidebar';
+import { getUserSidebarData } from '@/controllers';
+import { getUser } from '@/helpers/user';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,15 +18,29 @@ export const metadata: Metadata = {
   description: 'Manage tasks related to WCA competitions',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getUser();
+
+  const userData = user?.id ? await getUserSidebarData(user.id) : null;
+
+  const compLinks =
+    userData?.Competitions.map(({ competitionId, Competition }) => ({
+      id: Competition.MetaData?.wcaId || competitionId,
+      name: Competition.name,
+    })) || [];
+
   return (
     <html lang="en">
       <head>
         <link rel="icon" href="/icon.svg" sizes="any" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css"
+        />
       </head>
       <body
         className={classNames(
@@ -33,10 +49,7 @@ export default function RootLayout({
         )}
       >
         <div className="grid grid-cols-6 h-screen">
-          <Sidebar
-            competitions={['foo', 'bar', 'baz']}
-            className="col-span-1 h-screen"
-          />
+          <Sidebar compLinks={compLinks} className="col-span-1 h-screen" />
           <main className="col-span-5 overflow-y-auto">{children}</main>
         </div>
       </body>

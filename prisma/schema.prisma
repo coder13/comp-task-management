@@ -27,11 +27,11 @@ model User {
   Teams        TeamMemberMap[]
   Items        Item[]
 
-  Templates           Template[]
-  CompetitionMetaData CompetitionMetaData[]
-  Team                Team?                 @relation(fields: [teamId], references: [id])
-  teamId              Int?
-  credentials         Credentials?
+  Templates            Template[]
+  Team                 Team?                 @relation(fields: [teamId], references: [id])
+  teamId               Int?
+  credentials          Credentials?
+  importedCompetitions CompetitionMetaData[]
 }
 
 // While normally imported from the WCA website, this can exist without a link to the WCA
@@ -51,8 +51,8 @@ model Competition {
   Users UserCompetitionMap[]
   Teams Team[]               @relation("Competition")
 
-  Flow                Flow?                @relation(fields: [flowId], references: [id])
-  CompetitionMetaData CompetitionMetaData? @relation(fields: [competitionMetaDataId], references: [id])
+  Flow     Flow?                @relation(fields: [flowId], references: [id])
+  MetaData CompetitionMetaData? @relation(fields: [competitionMetaDataId], references: [id])
 }
 
 // Handles metadata for a competition. If there is a wcaId, this data persists downstream and can be updated manually

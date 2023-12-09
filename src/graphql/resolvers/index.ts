@@ -16,7 +16,7 @@ const resolvers: Resolvers<GraphQLContext> = {
         include: {
           Competition: {
             include: {
-              CompetitionMetaData: true,
+              MetaData: true,
             },
           },
           User: true,
