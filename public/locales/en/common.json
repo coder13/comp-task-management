@@ -1,0 +1,7 @@
+{
+  "CompetitionStatus": {
+    "Announced": "Announced",
+    "Planning": "Planning",
+    "Potential": "Potential"
+  }
+}

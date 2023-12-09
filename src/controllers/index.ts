@@ -27,11 +27,12 @@ const getCompetitionsForUser = async (userId: number) =>
       competitions.map((competition) => ({
         ...competition,
         roles: competition.Users.map(({ role }) => role),
+        status: competition.status,
       })),
     );
 
-export const getUserSidebarData = async (userId: number) => {
-  const competitions = await prisma.user.findFirst({
+export const getUserSidebarData = async (userId: number) =>
+  await prisma.user.findFirst({
     where: {
       id: userId,
     },
@@ -53,8 +54,3 @@ export const getUserSidebarData = async (userId: number) => {
       },
     },
   });
-
-  console.log(52, competitions);
-
-  return competitions;
-};

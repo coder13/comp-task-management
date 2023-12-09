@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Providers from '@/providers';
-import Header from '@/components/Header/Header';
 import classNames from 'classnames';
-import { Sidebar } from '@/components/Sidebar/Sidebar';
+import { Sidebar } from '@/components/Sidebar';
 import { getUserSidebarData } from '@/controllers';
 import { getUser } from '@/helpers/user';
 
@@ -31,6 +29,7 @@ export default async function RootLayout({
     userData?.Competitions.map(({ competitionId, Competition }) => ({
       id: Competition.MetaData?.wcaId || competitionId,
       name: Competition.name,
+      status: Competition.status,
     })) || [];
 
   return (

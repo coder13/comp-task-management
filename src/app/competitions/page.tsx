@@ -29,6 +29,7 @@ const getCompetitionsForUser = async (userId: number) =>
       competitions.map((competition) => ({
         ...competition,
         roles: competition.Users.map(({ role }) => role),
+        status: competition.status,
       })),
     );
 

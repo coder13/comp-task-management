@@ -6,10 +6,7 @@ import { GraphQLContext } from '../../types';
 
 export const importCompetition: MutationResolvers<GraphQLContext>['importCompetition'] =
   async (_, { wcaId }, { user }) => {
-    console.log(17, user);
     const compData = await getCompetition(user.accessToken, wcaId);
-
-    console.log(21, compData);
 
     const alreadyExists = await prisma.competitionMetaData.findUnique({
       where: {
@@ -42,7 +39,7 @@ export const importCompetition: MutationResolvers<GraphQLContext>['importCompeti
         status: compData.announced_at
           ? CompetitionStatus.Announced
           : CompetitionStatus.Planning,
-        CompetitionMetaData: {
+        MetaData: {
           create: {
             announced: !!compData.announced_at,
             startDate: compData.start_date,

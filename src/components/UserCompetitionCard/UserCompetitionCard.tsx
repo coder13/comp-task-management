@@ -1,6 +1,7 @@
 import { formatDateShort } from '@/lib/time';
 import { Competition, CompetitionMetaData } from '@prisma/client';
 import Link from 'next/link';
+import { CompetitionStatusPill } from '../CompetitionStatusPill';
 
 interface UserCompetitionCardProps extends Competition {
   MetaData: CompetitionMetaData | null;
@@ -10,6 +11,7 @@ interface UserCompetitionCardProps extends Competition {
 export function UserCompetitionCard({
   id,
   name,
+  status,
   MetaData,
   roles,
 }: UserCompetitionCardProps) {
@@ -20,9 +22,13 @@ export function UserCompetitionCard({
   return (
     <Link passHref href={`/competitions/${compId}`}>
       <li className="flex flex-col w-full hover:bg-slate-100 hover:opacity-80 p-2 transition-all duration-75 ease-in-out">
-        <div className="flex w-full items-baseline divide-x">
-          <h3 className="text-xl px-1">{name}</h3>
-          <p className="px-1">{dateString}</p>
+        <div className="flex w-full items-baseline">
+          <div className="divide-x flex">
+            <h3 className="text-xl px-1">{name}</h3>
+            <span className="px-1">{dateString}</span>
+          </div>
+          <div className="flex flex-grow" />
+          <CompetitionStatusPill status={status} />
         </div>
         <span className="px-1">{rolesText}</span>
       </li>
