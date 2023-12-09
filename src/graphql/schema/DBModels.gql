@@ -1,5 +1,66 @@
+scalar NumericalID
+
 type User {
-  id: ID!
+  id: NumericalID!
   name: String!
   email: String!
+}
+
+type Competition {
+  id: NumericalID!
+  name: String!
+  status: CompetitionStatus!
+  flowId: NumericalID!
+  competitionMetaDataId: NumericalID!
+  flow: Flow!
+  competitionMetaData: CompetitionMetaData!
+}
+
+type CompetitionMetaData {
+  id: NumericalID!
+  wcaId: String
+  updatedByUserId: NumericalID!
+  
+}
+
+type Datapoint {
+  id: NumericalID!
+  key: String!
+  type: JSONType!
+  validation: Validation
+}
+
+enum UserCompetitionRole {
+  Delegate
+  Organizer
+}
+
+enum TeamMemberRole {
+  Member
+  Leader
+}
+
+enum ItemType {
+  Category
+  Task
+  Datapoint
+  Note
+}
+
+enum CompetitionStatus {
+  Potential
+  Planned
+  Announced
+}
+
+enum JSONType {
+  String
+  Number
+  Boolean
+}
+
+enum Validation {
+  Date
+  Nonzero
+  CountryIso2
 }

@@ -1,6 +1,10 @@
+import { prisma } from '@/prisma';
+
 const Resolvers = {
   Query: {
-    greetings: () => 'This is the `greetings` field of the root `Query` type',
+    datapoints: () => {
+      return prisma.dataPoint.findMany();
+    },
   },
 };
 

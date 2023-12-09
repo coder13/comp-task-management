@@ -15,7 +15,7 @@ datasource db {
 // User models can exist with them having logged in
 // Users will be created if they don't exist when a competition is imported
 model User {
-  id        Int       @id @default(autoincrement())
+  id        Int       @id
   name      String
   email     String
   createdAt DateTime  @default(now())
@@ -192,12 +192,6 @@ model Template {
   Flow          Flow[]
 }
 
-model DataPoint {
-  id   Int    @id @default(autoincrement())
-  key  String
-  item Item[]
-}
-
 model ItemTemplate {
   id                 Int      @id @default(autoincrement())
   templateId         Int
@@ -216,6 +210,14 @@ model ItemTemplate {
   Template   Template       @relation(fields: [templateId], references: [id])
   ParentItem ItemTemplate?  @relation("ParentItemTemplate", fields: [parentItemId], references: [id])
   ChildItems ItemTemplate[] @relation("ParentItemTemplate")
+}
+
+model DataPoint {
+  id         Int         @id @default(autoincrement())
+  key        String      @unique
+  type       JSONType
+  validation Validation?
+  item       Item[]
 }
 
 // Enums:
@@ -241,4 +243,16 @@ enum CompetitionStatus {
   Potential
   Planned
   Announced
+}
+
+enum JSONType {
+  String
+  Number
+  Boolean
+}
+
+enum Validation {
+  Date
+  Nonzero
+  CountryIso2
 }

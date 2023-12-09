@@ -1,0 +1,22 @@
+type Query {
+  datapoints: [Datapoint!]!
+}
+
+type Datapoint {
+  id: Int!
+  key: String!
+  type: JSONType!
+  validation: Validation
+}
+
+enum JSONType {
+  String
+  Number
+  Boolean
+}
+
+enum Validation {
+  Date
+  Nonzero
+  CountryIso2
+}
