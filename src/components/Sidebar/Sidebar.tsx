@@ -1,12 +1,8 @@
-'use client';
-
 import classNames from 'classnames';
-import { ScrollArea } from '../ui/scroll-area';
 import { NavLink } from './NavLink';
-import {
-  CompetitionStatus,
-  useUserCompetitionsQuery,
-} from '@/generated/queries';
+import { CompetitionStatus } from '@/generated/queries';
+import { CompetitionList } from './CompetitionList';
+import Header from './Header';
 
 export interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   compLinks?: {
@@ -17,22 +13,19 @@ export interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Sidebar({ className }: SidebarProps) {
-  const { data } = useUserCompetitionsQuery();
-
-  const comps = data?.me?.Competitions || [];
-
   return (
-    <nav className={classNames('pb-12', className)}>
+    <nav className={classNames('pb-12 bg-slate-50', className)}>
+      <Header />
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <div className="space-y-1">
-            <NavLink href="/templates">
-              <i className="bx bx-spreadsheet" />
-              <span>Templates</span>
-            </NavLink>
             <NavLink href="/competitions">
               <i className="bx bxs-cube" />
               <span>Competitions</span>
+            </NavLink>
+            <NavLink href="/templates">
+              <i className="bx bx-spreadsheet" />
+              <span>Templates</span>
             </NavLink>
           </div>
         </div>
@@ -40,30 +33,7 @@ export function Sidebar({ className }: SidebarProps) {
           <h2 className="relative px-7 text-lg font-semibold tracking-tight">
             Competitions
           </h2>
-          <ScrollArea className="h-[300px] px-1">
-            <div className="space-y-1 p-2">
-              {comps?.map(({ competitionId, Competition }) => {
-                const name = Competition?.name || competitionId;
-                const status = Competition?.status;
-                const id = Competition?.Metadata?.wcaId || competitionId;
-
-                return (
-                  <NavLink key={id} href={`/competitions/${id}`}>
-                    <i
-                      className={classNames('bx bxs-circle', {
-                        'text-green-500':
-                          status === CompetitionStatus.Announced,
-                        'text-blue-500': status === CompetitionStatus.Planning,
-                        'text-yellow-500':
-                          status === CompetitionStatus.Potential,
-                      })}
-                    />
-                    <span>{name}</span>
-                  </NavLink>
-                );
-              })}
-            </div>
-          </ScrollArea>
+          <CompetitionList />
         </div>
       </div>
     </nav>

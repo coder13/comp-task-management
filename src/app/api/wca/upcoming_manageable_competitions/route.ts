@@ -5,12 +5,7 @@ export async function GET() {
   const user = await getUser();
 
   if (!user) {
-    return {
-      status: 401,
-      body: {
-        error: 'Unauthorized',
-      },
-    };
+    return Response.json({ error: 'Unauthenticated' }, { status: 403 });
   }
 
   const competitions = await getUpcomingManageableCompetitions(

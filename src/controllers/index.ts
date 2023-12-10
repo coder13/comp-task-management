@@ -1,6 +1,6 @@
 import { prisma } from '@/prisma';
 
-const getCompetitionsForUser = async (userId: number) =>
+export const getCompetitionsForUser = async (userId: number) =>
   await prisma.competition
     .findMany({
       where: {
@@ -50,6 +50,17 @@ export const getUserSidebarData = async (userId: number) =>
               Metadata: true,
             },
           },
+        },
+      },
+    },
+  });
+
+export const getTeamsForUser = async (userId: number) =>
+  await prisma.team.findMany({
+    where: {
+      Members: {
+        some: {
+          userId,
         },
       },
     },

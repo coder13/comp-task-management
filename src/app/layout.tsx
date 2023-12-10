@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
 import classNames from 'classnames';
+import './globals.css';
 import { Sidebar } from '@/components/Sidebar';
-import { getUserSidebarData } from '@/controllers';
-import { getUser } from '@/helpers/user';
 import Providers from '@/providers';
 
 const inter = Inter({
@@ -17,15 +15,11 @@ export const metadata: Metadata = {
   description: 'Manage tasks related to WCA competitions',
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getUser();
-
-  const userData = user?.id ? await getUserSidebarData(user.id) : null;
-
   return (
     <html lang="en">
       <head>
@@ -43,7 +37,7 @@ export default async function RootLayout({
       >
         <Providers>
           <div className="flex h-screen">
-            <Sidebar className="col-span-1 h-screen w-1/5 min-w-fit" />
+            <Sidebar className="col-span-1 h-screen w-64" />
             <main className="overflow-y-auto h-screen w-full">{children}</main>
           </div>
         </Providers>
