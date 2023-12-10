@@ -3,6 +3,7 @@ query UserCompetitions {
     id
     Competitions {
       competitionId
+      roles
       Competition {
         id
         name

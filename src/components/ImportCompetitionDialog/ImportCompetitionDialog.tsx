@@ -14,7 +14,10 @@ import { formatDateShort } from '@/lib/time';
 import { Competition } from '@/wcaApi/types';
 import { useEffect, useState } from 'react';
 import { List, ListItem } from '../List';
-import { useImportCompetitionMutation } from '@/generated/queries';
+import {
+  UserCompetitionsDocument,
+  useImportCompetitionMutation,
+} from '@/generated/queries';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -51,7 +54,9 @@ export function ImportCompetitionDialog({
   const [
     importCompetition,
     { data: importedCompetition, loading: importingCompetition },
-  ] = useImportCompetitionMutation();
+  ] = useImportCompetitionMutation({
+    refetchQueries: [UserCompetitionsDocument],
+  });
 
   const selectedCompetition = importableCompetitions.find(
     (c) => c.id === selectedCompetitionId,
@@ -73,8 +78,6 @@ export function ImportCompetitionDialog({
       },
     });
   };
-
-  console.log(importedCompetition);
 
   return (
     <Dialog

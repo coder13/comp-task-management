@@ -1,23 +1,31 @@
 import { formatDateShort } from '@/lib/time';
-import { Competition, CompetitionMetadata } from '@prisma/client';
 import Link from 'next/link';
 import { CompetitionStatusPill } from '../CompetitionStatusPill';
+import {
+  Competition,
+  CompetitionMetadata,
+  UserCompetitionMap,
+} from '@/generated/graphql';
 
-interface UserCompetitionCardProps extends Competition {
-  Metadata: CompetitionMetadata | null;
-  roles: string[];
+interface UserCompetitionCardProps
+  extends Pick<Competition, 'name' | 'status'> {
+  id: string;
+  roles: UserCompetitionMap['roles'];
+  wcaId?: CompetitionMetadata['wcaId'];
+  startDate?: CompetitionMetadata['startDate'];
 }
 
 export function UserCompetitionCard({
   id,
+  wcaId,
   name,
   status,
-  Metadata,
+  startDate,
   roles,
 }: UserCompetitionCardProps) {
-  const compId = Metadata?.wcaId || id;
+  const compId = wcaId || id;
   const rolesText = roles.join(' & ');
-  const dateString = Metadata?.startDate && formatDateShort(Metadata.startDate);
+  const dateString = startDate && formatDateShort(startDate);
 
   return (
     <Link passHref href={`/competitions/${compId}`}>

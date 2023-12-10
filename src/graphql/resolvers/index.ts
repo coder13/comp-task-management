@@ -27,6 +27,7 @@ const resolvers: Resolvers<GraphQLContext> = {
                 role: true,
               },
             },
+            Metadata: true,
           },
         })
         .then((competitions) =>
@@ -36,7 +37,7 @@ const resolvers: Resolvers<GraphQLContext> = {
             Competition: {
               ...competition,
             },
-            roles: Users.filter(({ role }) => role),
+            roles: Users.map(({ role }) => role),
           })),
         ) as Promise<UserCompetitionMap[]>,
   },

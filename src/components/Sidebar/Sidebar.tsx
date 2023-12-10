@@ -19,8 +19,6 @@ export interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Sidebar({ className }: SidebarProps) {
   const { data } = useUserCompetitionsQuery();
 
-  console.log(26, data);
-
   const comps = data?.me?.Competitions || [];
 
   return (
