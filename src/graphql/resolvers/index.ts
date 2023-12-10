@@ -9,31 +9,48 @@ const resolvers: Resolvers<GraphQLContext> = {
   Mutation,
   User: {
     Competitions: (user, _, __) =>
-      prisma.userCompetitionMap.findMany({
-        where: {
-          userId: user.id,
-        },
-        include: {
-          Competition: {
-            include: {
-              MetaData: true,
+      prisma.competition
+        .findMany({
+          where: {
+            Users: {
+              some: {
+                userId: user.id,
+              },
             },
           },
-          User: true,
-        },
-      }) as Promise<UserCompetitionMap[]>,
+          include: {
+            Users: {
+              where: {
+                userId: user.id,
+              },
+              select: {
+                role: true,
+              },
+            },
+          },
+        })
+        .then((competitions) =>
+          competitions.map(({ Users, ...competition }) => ({
+            competitionId: competition.id,
+            userId: user.id,
+            Competition: {
+              ...competition,
+            },
+            roles: Users.filter(({ role }) => role),
+          })),
+        ) as Promise<UserCompetitionMap[]>,
   },
   Competition: {
-    Users: (competition, _, __) =>
-      prisma.userCompetitionMap.findMany({
-        where: {
-          competitionId: competition.id,
-        },
-        include: {
-          User: true,
-          Competition: true,
-        },
-      }) as Promise<UserCompetitionMap[]>,
+    // Users: (competition, _, __) =>
+    //   prisma.userCompetitionMap.findMany({
+    //     where: {
+    //       competitionId: competition.id,
+    //     },
+    //     include: {
+    //       User: true,
+    //       Competition: true,
+    //     },
+    //   }) as Promise<UserCompetitionMap[]>,
   },
   UserCompetitionMap: {
     User: (userCompetitionMap, _, __) =>
@@ -42,12 +59,12 @@ const resolvers: Resolvers<GraphQLContext> = {
           id: userCompetitionMap.userId,
         },
       }),
-    Competition: (userCompetitionMap, _, __) =>
-      prisma.competition.findUnique({
-        where: {
-          id: userCompetitionMap.competitionId,
-        },
-      }),
+    // Competition: (userCompetitionMap, _, __) =>
+    //   prisma.competition.findUnique({
+    //     where: {
+    //       id: userCompetitionMap.competitionId,
+    //     },
+    //   }),
   },
 };
 

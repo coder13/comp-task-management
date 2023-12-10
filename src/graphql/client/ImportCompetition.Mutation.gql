@@ -1,0 +1,11 @@
+mutation ImportCompetition($wcaId: String!) {
+  importCompetition(wcaId: $wcaId) {
+    id
+    name
+    status
+    Metadata {
+      id
+      wcaId
+    }
+  }
+}

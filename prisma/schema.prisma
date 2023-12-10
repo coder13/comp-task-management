@@ -31,18 +31,18 @@ model User {
   Team                 Team?                 @relation(fields: [teamId], references: [id])
   teamId               Int?
   credentials          Credentials?
-  importedCompetitions CompetitionMetaData[]
+  importedCompetitions CompetitionMetadata[]
 }
 
 // While normally imported from the WCA website, this can exist without a link to the WCA
 // A user can create a Flow, then import a competition linking it or
 // A user can import a competition, then create a Flow linking it
 model Competition {
-  id                    Int               @id @default(autoincrement())
-  status                CompetitionStatus
-  name                  String
-  flowId                Int?              @unique
-  competitionMetaDataId Int?              @unique
+  id         Int               @id @default(autoincrement())
+  status     CompetitionStatus
+  name       String
+  flowId     Int?              @unique
+  metadataId Int?              @unique
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -52,12 +52,12 @@ model Competition {
   Teams Team[]               @relation("Competition")
 
   Flow     Flow?                @relation(fields: [flowId], references: [id])
-  MetaData CompetitionMetaData? @relation(fields: [competitionMetaDataId], references: [id])
+  Metadata CompetitionMetadata? @relation(fields: [metadataId], references: [id])
 }
 
 // Handles metadata for a competition. If there is a wcaId, this data persists downstream and can be updated manually
 // When a competition is linked, a user can choose to update the data from the WCA
-model CompetitionMetaData {
+model CompetitionMetadata {
   id              Int     @id @default(autoincrement())
   wcaId           String? @unique
   updatedByUserId Int?

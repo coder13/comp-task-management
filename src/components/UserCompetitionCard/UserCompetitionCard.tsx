@@ -1,10 +1,10 @@
 import { formatDateShort } from '@/lib/time';
-import { Competition, CompetitionMetaData } from '@prisma/client';
+import { Competition, CompetitionMetadata } from '@prisma/client';
 import Link from 'next/link';
 import { CompetitionStatusPill } from '../CompetitionStatusPill';
 
 interface UserCompetitionCardProps extends Competition {
-  MetaData: CompetitionMetaData | null;
+  Metadata: CompetitionMetadata | null;
   roles: string[];
 }
 
@@ -12,12 +12,12 @@ export function UserCompetitionCard({
   id,
   name,
   status,
-  MetaData,
+  Metadata,
   roles,
 }: UserCompetitionCardProps) {
-  const compId = MetaData?.wcaId || id;
+  const compId = Metadata?.wcaId || id;
   const rolesText = roles.join(' & ');
-  const dateString = MetaData?.startDate && formatDateShort(MetaData.startDate);
+  const dateString = Metadata?.startDate && formatDateShort(Metadata.startDate);
 
   return (
     <Link passHref href={`/competitions/${compId}`}>

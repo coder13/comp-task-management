@@ -11,7 +11,7 @@ const getCompetitionsForUser = async (userId: number) =>
         },
       },
       include: {
-        MetaData: true,
+        Metadata: true,
         Users: {
           select: {
             role: true,
@@ -47,7 +47,7 @@ export const getUserSidebarData = async (userId: number) =>
         include: {
           Competition: {
             include: {
-              MetaData: true,
+              Metadata: true,
             },
           },
         },

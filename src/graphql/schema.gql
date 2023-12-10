@@ -46,17 +46,19 @@ type Competition {
   id: NumericalID!
   name: String!
   flowId: NumericalID
-  competitionMetaDataId: NumericalID
+  status: CompetitionStatus!
+  metadataId: NumericalID
+
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
 
   Flow: Flow
-  CompetitionMetaData: CompetitionMetaData
+  Metadata: CompetitionMetadata
   Users: [UserCompetitionMap!]
 }
 
-type CompetitionMetaData {
+type CompetitionMetadata {
   id: NumericalID!
   wcaId: String
   updatedByUserId: NumericalID
@@ -74,7 +76,7 @@ type CompetitionMetaData {
 type UserCompetitionMap {
   competitionId: NumericalID!
   userId: NumericalID!
-  role: UserCompetitionRole!
+  roles: [UserCompetitionRole!]!
 
   Competition: Competition
   User: User
@@ -213,7 +215,7 @@ enum ItemType {
 
 enum CompetitionStatus {
   Potential
-  Planned
+  Planning
   Announced
 }
 

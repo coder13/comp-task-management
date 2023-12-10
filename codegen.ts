@@ -14,6 +14,21 @@ const config: CodegenConfig = {
         },
       },
     },
+    'src/generated/queries.ts': {
+      documents: 'src/graphql/client/*.gql',
+      plugins: [
+        'typescript',
+        'typescript-operations',
+        'typescript-react-apollo',
+      ],
+      config: {
+        scalars: {
+          Date: 'string',
+          DateTime: 'Date',
+          NumericalID: 'number',
+        },
+      },
+    },
   },
 };
 

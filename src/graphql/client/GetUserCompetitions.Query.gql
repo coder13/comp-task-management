@@ -1,0 +1,17 @@
+query UserCompetitions {
+  me {
+    id
+    Competitions {
+      competitionId
+      Competition {
+        id
+        name
+        status
+        Metadata {
+          wcaId
+          startDate
+        }
+      }
+    }
+  }
+}

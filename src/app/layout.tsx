@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import { Sidebar } from '@/components/Sidebar';
 import { getUserSidebarData } from '@/controllers';
 import { getUser } from '@/helpers/user';
+import Providers from '@/providers';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -25,13 +26,6 @@ export default async function RootLayout({
 
   const userData = user?.id ? await getUserSidebarData(user.id) : null;
 
-  const compLinks =
-    userData?.Competitions.map(({ competitionId, Competition }) => ({
-      id: Competition.MetaData?.wcaId || competitionId,
-      name: Competition.name,
-      status: Competition.status,
-    })) || [];
-
   return (
     <html lang="en">
       <head>
@@ -47,10 +41,12 @@ export default async function RootLayout({
           inter.className,
         )}
       >
-        <div className="grid grid-cols-6 h-screen">
-          <Sidebar compLinks={compLinks} className="col-span-1 h-screen" />
-          <main className="col-span-5 overflow-y-auto">{children}</main>
-        </div>
+        <Providers>
+          <div className="flex h-screen">
+            <Sidebar className="col-span-1 h-screen w-1/5 min-w-fit" />
+            <main className="overflow-y-auto h-screen w-full">{children}</main>
+          </div>
+        </Providers>
       </body>
     </html>
   );

@@ -1,3 +1,4 @@
+import { ImportCompetitionDialog } from '@/components/ImportCompetitionDialog';
 import { UserCompetitionCard } from '@/components/UserCompetitionCard';
 import { getUser } from '@/helpers/user';
 import { prisma } from '@/prisma';
@@ -13,7 +14,7 @@ const getCompetitionsForUser = async (userId: number) =>
         },
       },
       include: {
-        MetaData: true,
+        Metadata: true,
         Users: {
           select: {
             role: true,
@@ -40,12 +41,18 @@ export default async function Competitions() {
   return (
     <div className="w-full flex flex-col items-center">
       <div className="p-2 w-4/5">
-        <h2 className="text-2xl">Competitions</h2>
-        <ul className="divide-y-2">
-          {competitions.map((competition) => (
-            <UserCompetitionCard key={competition.id} {...competition} />
-          ))}
-        </ul>
+        <div className="p-2">
+          <h2 className="text-2xl">Competitions</h2>
+          <ul className="divide-y-2">
+            {competitions.map((competition) => (
+              <UserCompetitionCard key={competition.id} {...competition} />
+            ))}
+          </ul>
+        </div>
+        <hr />
+        <div className="p-2">
+          <ImportCompetitionDialog />
+        </div>
       </div>
     </div>
   );

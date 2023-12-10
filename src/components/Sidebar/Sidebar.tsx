@@ -1,17 +1,28 @@
+'use client';
+
 import classNames from 'classnames';
 import { ScrollArea } from '../ui/scroll-area';
-import { CompetitionStatus } from '@prisma/client';
 import { NavLink } from './NavLink';
+import {
+  CompetitionStatus,
+  useUserCompetitionsQuery,
+} from '@/generated/queries';
 
 export interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  compLinks: {
+  compLinks?: {
     name: string;
     id: string | number;
     status: CompetitionStatus;
   }[];
 }
 
-export function Sidebar({ className, compLinks }: SidebarProps) {
+export function Sidebar({ className }: SidebarProps) {
+  const { data } = useUserCompetitionsQuery();
+
+  console.log(26, data);
+
+  const comps = data?.me?.Competitions || [];
+
   return (
     <nav className={classNames('pb-12', className)}>
       <div className="space-y-4 py-4">
@@ -33,18 +44,26 @@ export function Sidebar({ className, compLinks }: SidebarProps) {
           </h2>
           <ScrollArea className="h-[300px] px-1">
             <div className="space-y-1 p-2">
-              {compLinks?.map(({ id, name, status }) => (
-                <NavLink key={id} href={`/competitions/${id}`}>
-                  <i
-                    className={classNames('bx bxs-circle', {
-                      'text-green-500': status === CompetitionStatus.Announced,
-                      'text-blue-500': status === CompetitionStatus.Planning,
-                      'text-yellow-500': status === CompetitionStatus.Potential,
-                    })}
-                  />
-                  <span>{name}</span>
-                </NavLink>
-              ))}
+              {comps?.map(({ competitionId, Competition }) => {
+                const name = Competition?.name || competitionId;
+                const status = Competition?.status;
+                const id = Competition?.Metadata?.wcaId || competitionId;
+
+                return (
+                  <NavLink key={id} href={`/competitions/${id}`}>
+                    <i
+                      className={classNames('bx bxs-circle', {
+                        'text-green-500':
+                          status === CompetitionStatus.Announced,
+                        'text-blue-500': status === CompetitionStatus.Planning,
+                        'text-yellow-500':
+                          status === CompetitionStatus.Potential,
+                      })}
+                    />
+                    <span>{name}</span>
+                  </NavLink>
+                );
+              })}
             </div>
           </ScrollArea>
         </div>

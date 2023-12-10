@@ -1,4 +1,4 @@
-import { MutationResolvers } from '@/generated/graphql';
+import { Competition, MutationResolvers } from '@/generated/graphql';
 import { prisma } from '@/prisma';
 import { getCompetition } from '@/wcaApi';
 import { CompetitionStatus, UserCompetitionRole } from '@prisma/client';
@@ -8,7 +8,7 @@ export const importCompetition: MutationResolvers<GraphQLContext>['importCompeti
   async (_, { wcaId }, { user }) => {
     const compData = await getCompetition(user.accessToken, wcaId);
 
-    const alreadyExists = await prisma.competitionMetaData.findUnique({
+    const alreadyExists = await prisma.competitionMetadata.findUnique({
       where: {
         wcaId,
       },
@@ -33,13 +33,13 @@ export const importCompetition: MutationResolvers<GraphQLContext>['importCompeti
       })),
     ];
 
-    const competition = await prisma.competition.create({
+    return (await prisma.competition.create({
       data: {
         name: compData.name,
         status: compData.announced_at
           ? CompetitionStatus.Announced
           : CompetitionStatus.Planning,
-        MetaData: {
+        Metadata: {
           create: {
             announced: !!compData.announced_at,
             startDate: compData.start_date,
@@ -66,7 +66,8 @@ export const importCompetition: MutationResolvers<GraphQLContext>['importCompeti
           })),
         },
       },
-    });
-
-    return competition;
+      include: {
+        Metadata: true,
+      },
+    })) as Competition;
   };
