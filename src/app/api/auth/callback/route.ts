@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
       body: JSON.stringify({
         client_id: process.env.WCA_CLIENT_ID!,
         client_secret: process.env.WCA_CLIENT_SECRET!,
-        redirect_uri: 'http://localhost:3000/api/auth/callback',
+        redirect_uri: `${process.env.BASE_URL!}/api/auth/callback`,
         grant_type: 'authorization_code',
         code,
       }),
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
       expiresAt: tokenRes.created_at + tokenRes.expires_in,
     });
 
-    const response = NextResponse.redirect('http://localhost:3000/');
+    const response = NextResponse.redirect(process.env.BASE_URL!);
 
     response.cookies.set(COOKIE_NAME, token, {
       httpOnly: true,
@@ -75,6 +75,6 @@ export async function GET(req: NextRequest) {
     return response;
   } catch (e: { message: string } | any) {
     logger.error('message' in e ? e.message : e);
-    return NextResponse.redirect('http://localhost:3000/');
+    return NextResponse.redirect(process.env.BASE_URL);
   }
 }

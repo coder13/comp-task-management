@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import './globals.css';
 import { Sidebar } from '@/components/Sidebar';
 import Providers from '@/providers';
+import { getUser } from '@/helpers/user';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -15,11 +16,13 @@ export const metadata: Metadata = {
   description: 'Manage tasks related to WCA competitions',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getUser();
+
   return (
     <html lang="en">
       <head>
@@ -37,7 +40,7 @@ export default function RootLayout({
       >
         <Providers>
           <div className="flex h-screen">
-            <Sidebar className="col-span-1 h-screen w-64" />
+            {user && <Sidebar className="col-span-1 h-screen w-64" />}
             <main className="overflow-y-auto h-screen w-full">{children}</main>
           </div>
         </Providers>

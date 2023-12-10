@@ -33,12 +33,14 @@ export function UserCompetitionCard({
         <div className="flex w-full items-baseline">
           <div className="divide-x flex">
             <h3 className="text-xl px-1">{name}</h3>
-            <span className="px-1">{dateString}</span>
           </div>
           <div className="flex flex-grow" />
           <CompetitionStatusPill status={status} />
         </div>
-        <span className="px-1">{rolesText}</span>
+        <div className="divide-x">
+          <span className="px-1">{dateString}</span>
+          <span className="px-1">{rolesText}</span>
+        </div>
       </li>
     </Link>
   );
