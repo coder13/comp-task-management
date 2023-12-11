@@ -1,5 +1,18 @@
 import { EventId } from '@wca/helpers';
 
+export interface TokenResponse {
+  access_token: string;
+  refresh_token: string;
+  token_type: 'Bearer';
+  expires_in: number;
+  scope: string;
+  created_at: number;
+}
+
+export interface ProfileResponse {
+  me: User;
+}
+
 export interface Competition {
   class: 'competition';
   id: string;

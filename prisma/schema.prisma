@@ -23,15 +23,16 @@ model User {
   updatedAt DateTime  @updatedAt
   lastLogin DateTime?
 
-  Competitions UserCompetitionMap[]
-  Teams        TeamMemberMap[]
-  Items        Item[]
-
+  Competitions         UserCompetitionMap[]
+  Teams                TeamMemberMap[]
+  Items                Item[]
   Templates            Template[]
-  Team                 Team?                 @relation(fields: [teamId], references: [id])
-  teamId               Int?
-  credentials          Credentials?
+  Credentials          Credentials?
   importedCompetitions CompetitionMetadata[]
+
+  // For org users:
+  teamId Int?
+  Team   Team? @relation(fields: [teamId], references: [id])
 }
 
 // While normally imported from the WCA website, this can exist without a link to the WCA
@@ -48,9 +49,8 @@ model Competition {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  Users UserCompetitionMap[]
-  Teams Team[]               @relation("Competition")
-
+  Users    UserCompetitionMap[]
+  Teams    Team[]               @relation("Competition")
   Flow     Flow?                @relation(fields: [flowId], references: [id])
   Metadata CompetitionMetadata? @relation(fields: [metadataId], references: [id])
 }

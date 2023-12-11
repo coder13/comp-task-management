@@ -22,8 +22,6 @@ export const yogaServer = createYoga({
     // const request = req.request as NextRequest;
     const user = await getUser();
 
-    console.log(25, user);
-
     return {
       user,
     };

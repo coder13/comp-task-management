@@ -4,7 +4,7 @@ import { Button, ButtonProps } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 
-export function SubmitButton({ disabled, ...props }: ButtonProps) {
+export function SubmitButton({ disabled, children, ...props }: ButtonProps) {
   const { pending } = useFormStatus();
 
   return (
@@ -15,7 +15,7 @@ export function SubmitButton({ disabled, ...props }: ButtonProps) {
       {...props}
     >
       {pending && <Loader2 className="animate-spin mr-2" />}
-      Create Team
+      {children}
     </Button>
   );
 }

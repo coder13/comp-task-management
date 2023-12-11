@@ -1,4 +1,4 @@
-import { Competition } from './types';
+import { Competition, ProfileResponse, TokenResponse } from './types';
 
 const WCA_ORIGIN = process.env.WCA_ORIGIN;
 
@@ -9,7 +9,14 @@ export const wcaFetch = <T>(url: string, options: RequestInit = {}) => {
       'Content-Type': 'application/json',
       ...options.headers,
     },
-  }).then((data) => data.json()) as Promise<T>;
+  }).then(async (data) => {
+    if (data.ok) {
+      return data.json();
+    } else {
+      console.log(16, data.statusText);
+      throw await data.text();
+    }
+  }) as Promise<T>;
 };
 
 export const wcaAuthenticatedFetch = <T>(
@@ -46,3 +53,30 @@ export const getUpcomingManageableCompetitions = (accessToken: string) => {
     `/competitions?${params.toString()}`,
   );
 };
+
+export const getTokens = async (data: {
+  grant_type: 'password';
+  username: string;
+  password: string;
+}) =>
+  (await fetch(`${WCA_ORIGIN}/oauth/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      client_id: process.env.WCA_CLIENT_ID!,
+      client_secret: process.env.WCA_CLIENT_SECRET!,
+      redirect_uri: `${process.env.BASE_URL!}/api/auth/callback`,
+      scope: 'public manage_competitions email',
+      ...data,
+    }),
+  }).then(async (data) => {
+    if (data.ok) {
+      return await data.json();
+    }
+    throw await data.text();
+  })) as Promise<TokenResponse>;
+
+export const getProfile = async (access_token: string) =>
+  await wcaAuthenticatedFetch<ProfileResponse>(access_token, '/me');

@@ -2,11 +2,11 @@
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { SubmitButton } from './submit-button';
 import { useFormState } from 'react-dom';
 import { CreateTeamState, createTeam } from '@/app/actions';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { SubmitButton } from '@/components/SubmitButton';
 
 const initialState: CreateTeamState = {
   message: '',
@@ -39,7 +39,7 @@ export function CreateTeamForm() {
             onChange={(e) => setTeamName(e.target.value)}
           />
         </div>
-        <SubmitButton disabled={!canSubmit} />
+        <SubmitButton disabled={!canSubmit}>Create Team</SubmitButton>
         <p aria-live="polite">{state?.message}</p>
       </div>
     </form>
