@@ -1,5 +1,9 @@
-mutation ImportCompetition($wcaId: String!) {
-  importCompetition(wcaId: $wcaId) {
+mutation ImportCompetition(
+  $wcaId: String!
+  $teamId: NumericalID
+  $orgUserId: NumericalID
+) {
+  importCompetition(wcaId: $wcaId, teamId: $teamId, orgUserId: $orgUserId) {
     id
     name
     status

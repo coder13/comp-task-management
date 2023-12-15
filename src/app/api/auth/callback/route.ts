@@ -45,6 +45,7 @@ export async function GET(req: NextRequest) {
         url: userRes.me.avatar.thumb_url,
       },
       accessToken: tokenRes.access_token,
+      refreshToken: tokenRes.refresh_token,
       expiresAt: tokenRes.created_at + tokenRes.expires_in,
     });
 

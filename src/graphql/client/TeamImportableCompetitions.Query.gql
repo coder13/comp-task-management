@@ -1,0 +1,15 @@
+query TeamImportableCompetitions($id: NumericalID!) {
+  team(id: $id) {
+    id
+    OrgUsers {
+      id
+      importableCompetitions {
+        id
+        name
+        start_date
+        end_date
+      }
+      missingCredentials
+    }
+  }
+}

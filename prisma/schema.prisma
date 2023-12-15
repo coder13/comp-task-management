@@ -50,7 +50,7 @@ model Competition {
   deletedAt DateTime?
 
   Users    UserCompetitionMap[]
-  Teams    Team[]               @relation("Competition")
+  Teams    Team[]               @relation("TeamCompetitions")
   Flow     Flow?                @relation(fields: [flowId], references: [id])
   Metadata CompetitionMetadata? @relation(fields: [metadataId], references: [id])
 }
@@ -69,7 +69,7 @@ model CompetitionMetadata {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  UpdatedBy   User?        @relation(fields: [updatedByUserId], references: [id]) // null if imported from WCA
+  UpdatedByUser   User?        @relation(fields: [updatedByUserId], references: [id]) // null if imported from WCA
   Competition Competition?
 }
 
@@ -92,7 +92,7 @@ model Team {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  Competitions Competition[]   @relation("Competition")
+  Competitions Competition[]   @relation("TeamCompetitions")
   Members      TeamMemberMap[]
   Templates    Template[]
   OrgUsers     User[]

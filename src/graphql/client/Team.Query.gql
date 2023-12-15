@@ -1,0 +1,34 @@
+query Team($id: NumericalID!) {
+  team(id: $id) {
+    id
+    name
+
+    OrgUsers {
+      id
+      name
+      email
+      missingCredentials
+    }
+
+    Competitions {
+      id
+      name
+      flowId
+      status
+      metadataId
+      Metadata {
+        id
+        wcaId
+        announced
+        startDate
+        endDate
+        updatedByUserId
+        UpdatedByUser {
+          id
+          name
+          email
+        }
+      }
+    }
+  }
+}

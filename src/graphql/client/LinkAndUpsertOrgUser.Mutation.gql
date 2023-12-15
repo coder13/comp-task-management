@@ -1,0 +1,12 @@
+mutation LinkAndUpsertOrgUser(
+  $teamId: NumericalID!
+  $email: String!
+  $password: String!
+  $importComps: Boolean
+) {
+  linkAndUpsertOrgUser(teamId: $teamId, email: $email, password: $password, importComps: $importComps) {
+    id
+    name
+    email
+  }
+}

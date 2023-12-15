@@ -13,6 +13,7 @@ export interface User {
     url: string;
   };
   accessToken: string;
+  refreshToken: string;
   expiresAt: number;
 }
 

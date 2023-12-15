@@ -2,7 +2,6 @@
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useCallback, useState } from 'react';
 import { LoadingButton } from '../Buttons';
 import {
@@ -11,7 +10,7 @@ import {
   useLinkAndUpsertOrgUserMutation,
 } from '@/generated/queries';
 
-export function AddOrgUserForm({
+export function RevalidateCredentialsOrgUserForm({
   teamId,
   onSuccess,
 }: {
@@ -20,7 +19,6 @@ export function AddOrgUserForm({
 }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [importComps, setImportComps] = useState<boolean>(true);
 
   const [addOrgUser, { error, loading }] = useLinkAndUpsertOrgUserMutation({
     refetchQueries: [TeamDocument, TeamImportableCompetitionsDocument],
@@ -36,12 +34,12 @@ export function AddOrgUserForm({
         email,
         password,
         teamId,
-        importComps,
+        importComps: false,
       },
     }).then(() => {
       onSuccess();
     });
-  }, [addOrgUser, email, importComps, onSuccess, password, teamId]);
+  }, [addOrgUser, email, onSuccess, password, teamId]);
 
   return (
     <form action={handleAddOrgUser}>
@@ -71,27 +69,8 @@ export function AddOrgUserForm({
             when initially fetching access tokens.
           </p>
         </div>
-        <div className="grid gap-1.5">
-          <div className="flex w-full space-x-2">
-            <Checkbox
-              id="importComps"
-              checked={importComps}
-              onCheckedChange={(checked) => setImportComps(!!checked)}
-            />
-            <label
-              htmlFor="importComps"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Import or link competitions
-            </label>
-          </div>
-          <p className="text-xs text-neutral-600">
-            Looks for competitions already managed by the org user and links
-            them to the team if found. Otherwise, imports the competitions.
-          </p>
-        </div>
         <LoadingButton loading={loading} disabled={!canSubmit}>
-          Add Org User
+          Log in
         </LoadingButton>
         <p aria-live="polite">{error?.message}</p>
       </div>

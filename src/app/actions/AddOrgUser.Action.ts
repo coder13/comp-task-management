@@ -3,6 +3,7 @@
 import { getUser } from '@/helpers/user';
 import { getProfile, getTokens } from '@/wcaApi';
 import { logger } from '../../../logger';
+import { revalidatePath } from 'next/cache';
 
 export interface AddOrgUserState {
   message: string;
@@ -26,8 +27,6 @@ export async function addOrgUser(_: AddOrgUserState, formData: FormData) {
       message: 'Missing teamId',
     };
   }
-
-  console.log({ teamId, username, password });
 
   const team = await prisma?.team.findFirst({
     where: {
@@ -117,6 +116,8 @@ export async function addOrgUser(_: AddOrgUserState, formData: FormData) {
       id: profile.me.id,
     },
   });
+
+  revalidatePath(`/teams/${teamId}`);
 
   return {
     message: 'Org user added!',

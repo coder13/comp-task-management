@@ -6,7 +6,7 @@ import { useFormState } from 'react-dom';
 import { CreateTeamState, createTeam } from '@/app/actions';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SubmitButton } from '@/components/SubmitButton';
+import { SubmitButton } from '@/components/Buttons';
 
 const initialState: CreateTeamState = {
   message: '',
