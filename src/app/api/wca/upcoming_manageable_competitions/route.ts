@@ -1,33 +1,33 @@
-import { getUser } from '@/helpers/user';
-import { getUpcomingManageableCompetitions } from '@/wcaApi';
+// import { getUser } from '@/helpers/user';
+// import { getUpcomingManageableCompetitions } from '@/wcaApi';
 
-export async function GET() {
-  const user = await getUser();
+// export async function GET() {
+//   const user = await getUser();
 
-  if (!user) {
-    return Response.json({ error: 'Unauthenticated' }, { status: 403 });
-  }
+//   if (!user) {
+//     return Response.json({ error: 'Unauthenticated' }, { status: 403 });
+//   }
 
-  const competitions = await getUpcomingManageableCompetitions(
-    user.accessToken,
-  );
+//   const competitions = await getUpcomingManageableCompetitions(
+//     user.accessToken,
+//   );
 
-  const compIds = competitions.map(({ id }) => id);
+//   const compIds = competitions.map(({ id }) => id);
 
-  const importedCompetitions =
-    (await prisma?.competitionMetadata.findMany({
-      where: {
-        wcaId: {
-          in: compIds,
-        },
-      },
-    })) || [];
+//   const importedCompetitions =
+//     (await prisma?.competitionMetadata.findMany({
+//       where: {
+//         wcaId: {
+//           in: compIds,
+//         },
+//       },
+//     })) || [];
 
-  const importedCompetitionIds = importedCompetitions.map(({ wcaId }) => wcaId);
+//   const importedCompetitionIds = importedCompetitions.map(({ wcaId }) => wcaId);
 
-  const importableCompetitions = competitions.filter(
-    ({ id }) => !importedCompetitionIds.includes(id),
-  );
+//   const importableCompetitions = competitions.filter(
+//     ({ id }) => !importedCompetitionIds.includes(id),
+//   );
 
-  return Response.json({ competitions: importableCompetitions });
-}
+//   return Response.json({ competitions: importableCompetitions });
+// }
